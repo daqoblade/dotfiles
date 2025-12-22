@@ -17,6 +17,7 @@
 
   # Use latest kernel.
   boot.kernelPackages = pkgs.linuxPackages_latest;
+  boot.kernelParams = [ "usbcore.autosuspend=-1" "amdgpt.dcdebugmask=0x10" ] ;
   # Use the explicit pkgs path instead of 'config.boot' to avoid the null error
   # This forces the specific driver for your 8852CU chip to load
   boot.kernelModules = [ "8852cu" ];
@@ -25,6 +26,7 @@
   '';
   boot.initrd.kernelModules = [ "amdgpu" ];
   services.xserver.videoDrivers = [ "amdgpu" ];
+  nix.settings.experimental-features = [ "nix-command" "flakes" ];
 
   hardware.graphics = {
     enable = true;
@@ -37,7 +39,7 @@
   '';
   hardware.enableRedistributableFirmware = true;
 
-  networking.hostName = "nixos"; # Define your hostname.
+  networking.hostName = "dqb"; # Define your hostname.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
 
   # Configure network proxy if necessary
@@ -76,10 +78,19 @@
   services.desktopManager.plasma6.enable = false;
 
   # Configure keymap in X11
-  services.xserver.xkb = {
-    layout = "us,kr";
-    variant = "";
-    options = "caps:escape,korean:ralt_hangul,korean:rctrl_hanja";
+  services.xserver = {
+    xkb = {
+      layout = "us,kr";
+      variant = "";
+      options = "caps:escape,korean:ralt_hangul,korean:rctrl_hanja";
+    };
+    libinput = {
+      enable = true;
+      mouse = {
+        accelProfile = "flat";
+        accelSpeed = "0.0";
+      };
+    };
   };
 
   # Enable CUPS to print documents.
@@ -193,6 +204,8 @@
   mangohud
   gamemode
   
+  ytmdesktop
+  
   niri
   foot
   fuzzel
@@ -220,6 +233,7 @@
   programs.gamemode.enable = true;
   hardware.opentabletdriver.enable = true;
   hardware.opentabletdriver.daemon.enable = true;
+  powerManagement.cpuFreqGovernor = "performance";
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
   # programs.mtr.enable = true;

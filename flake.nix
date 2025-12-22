@@ -14,7 +14,7 @@
 
   outputs = { self, nixpkgs, rtl8852cu-src, ... }@inputs: {
     # Replace 'nixos' with your actual hostname if it's different
-    nixosConfigurations.nixos = nixpkgs.lib.nixosSystem {
+    nixosConfigurations.dqb = nixpkgs.lib.nixosSystem {
       system = "x86_64-linux";
       specialArgs = { inherit inputs; };
       modules = [
