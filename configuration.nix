@@ -48,6 +48,7 @@
 
   # Enable networking
   networking.networkmanager.enable = true;
+  networking.networkmanager.unmanaged = [ "wlp41s0" ];
 
   # Set your time zone.
   time.timeZone = "Australia/Brisbane";
@@ -211,6 +212,7 @@
 
   opentabletdriver
   obs-studio
+  qalculate-qt
 
   thunderbird
   kdePackages.okular
@@ -219,6 +221,7 @@
   heroic
   mangohud
   gamemode
+  adwaita-icon-theme
   
   ytmdesktop
   
