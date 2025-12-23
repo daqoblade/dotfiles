@@ -84,6 +84,8 @@
       variant = "";
       options = "caps:escape,korean:ralt_hangul,korean:rctrl_hanja";
     };
+  };
+  services = {
     libinput = {
       enable = true;
       mouse = {
@@ -173,6 +175,20 @@
   programs.steam = {
     enable = true;
     remotePlay.openFirewall = true;
+    package = pkgs.steam.override {
+      extraProfile = ''
+        unset TZ
+      '';
+    };
+  };
+  systemd.tmpfiles.rules = [
+    "L+ /usr/share/zoneinfo - - - - ${pkgs.tzdata}/share/zoneinfo"
+  ];
+  environment.etc."localtime".source = "/etc/zoneinfo/Australia/Brisbane"; 
+
+  fileSystems."/usr/share/zoneinfo" = {
+    device = "${pkgs.tzdata}/share/zoneinfo";
+    options = [ "bind" ];
   };
 
   # List packages installed in system profile. To search, run:
@@ -209,6 +225,7 @@
   niri
   foot
   fuzzel
+  cliphist
   fastfetch
   grim
   nwg-panel
@@ -228,6 +245,13 @@
       ExecStart = "${pkgs.wl-clipboard}/bin/wl-paste --type text --primary --watch ${pkgs.wl-clipboard}/bin/wl-copy --primary --clear";
       Restart = "always";
       RestartSec = 1;
+    };
+  };
+  systemd.user.services.cliphist = {
+    description = "Clipboard history service";
+    wantedBy = [ "graphical-session.target" ];
+    serviceConfig = {
+      ExecStart = "${pkgs.cliphist}/bin/cliphist watch";
     };
   };
   programs.gamemode.enable = true;
