@@ -250,8 +250,19 @@
   systemd.user.services.cliphist = {
     description = "Clipboard history service";
     wantedBy = [ "graphical-session.target" ];
+    after = [ "graphical-session.target" ];
     serviceConfig = {
-      ExecStart = "${pkgs.cliphist}/bin/cliphist watch";
+      ExecStart = "${pkgs.bash}/bin/sh -c '${pkgs.wl-clipboard}/bin/wl-paste --type text --watch ${pkgs.cliphist}/bin/cliphist store'";
+      Restart = "always";
+    };
+  };
+
+  systemd.user.services.cliphist-images = {
+    description = "Clipboard history service (images)";
+    wantedBy = [ "graphical-session.target" ];
+    serviceConfig = {
+      ExecStart = "${pkgs.bash}/bin/sh -c '${pkgs.wl-clipboard}/bin/wl-paste --type image --watch ${pkgs.cliphist}/bin/cliphist store'";
+      Restart = "always";
     };
   };
   programs.gamemode.enable = true;
