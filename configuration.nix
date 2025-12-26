@@ -75,6 +75,8 @@
   coreutils
   clang
 
+  pkgs.nerd-fonts.jetbrains-mono
+
   fastfetch
   ];
 
