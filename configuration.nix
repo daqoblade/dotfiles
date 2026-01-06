@@ -196,6 +196,7 @@
   };
   environment.systemPackages = with pkgs; [
   vim-full
+  neovim
   #  wget
   vesktop
   helix
