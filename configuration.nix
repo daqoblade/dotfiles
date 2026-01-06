@@ -17,15 +17,7 @@
 
   # Use latest kernel.
   boot.kernelPackages = pkgs.linuxPackages_latest;
-  boot.kernelParams = [ "usbcore.autosuspend=-1" "amdgpt.dcdebugmask=0x10" ] ;
-  # Use the explicit pkgs path instead of 'config.boot' to avoid the null error
-  # This forces the specific driver for your 8852CU chip to load
-  boot.kernelModules = [ "8852cu" ];
-  boot.extraModprobeConfig = ''
-    options 8852cu rtw_switch_usb_mode=1
-  '';
-  boot.initrd.kernelModules = [ "amdgpu" ];
-  services.xserver.videoDrivers = [ "amdgpu" ];
+
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
 
   hardware.graphics = {
@@ -34,9 +26,6 @@
   };
 
   hardware.usb-modeswitch.enable = true;
-  services.udev.extraRules = ''
-    ACTION=="add", SUBSYSTEM=="usb", ATTR{idVendor}=="35bc", ATTR{idProduct}=="0102", RUN+="${pkgs.kmod}/bin/modprobe rtw89_8852c", RUN+="${pkgs.bash}/bin/sh -c 'echo 35bc 0102 > /sys/bus/usb/drivers/rtw89_8852cu/new_id'"
-  '';
   hardware.enableRedistributableFirmware = true;
 
   networking.hostName = "dqb"; # Define your hostname.
@@ -48,7 +37,6 @@
 
   # Enable networking
   networking.networkmanager.enable = true;
-  networking.networkmanager.unmanaged = [ "wlp41s0" ];
 
   # Set your time zone.
   time.timeZone = "Australia/Brisbane";
@@ -132,6 +120,7 @@
       kdePackages.kate
     #  thunderbird
     ];
+    initialPassword = "pwd";
   };
   security.sudo.extraRules = [
    {
@@ -144,12 +133,6 @@
     ];
    }
   ];
-
-  fileSystems."/mnt/storage" = {
-    device = "/dev/disk/by-uuid/0e7b0dd5-42b3-4cc0-baf1-78130c938cb7";
-    fsType = "ext4";
-    options = [ "nofail" ];
-};
 
   programs.zsh = {
     enable = true;
@@ -182,15 +165,6 @@
       '';
     };
   };
-  systemd.tmpfiles.rules = [
-    "L+ /usr/share/zoneinfo - - - - ${pkgs.tzdata}/share/zoneinfo"
-  ];
-  environment.etc."localtime".source = "/etc/zoneinfo/Australia/Brisbane"; 
-
-  fileSystems."/usr/share/zoneinfo" = {
-    device = "${pkgs.tzdata}/share/zoneinfo";
-    options = [ "bind" ];
-  };
 
   # List packages installed in system profile. To search, run:
   # $ nix search wget
@@ -210,7 +184,6 @@
   ripgrep
   fd
 
-  opentabletdriver
   obs-studio
   qalculate-qt
 
@@ -218,9 +191,6 @@
   kdePackages.okular
   foliate
 
-  heroic
-  mangohud
-  gamemode
   adwaita-icon-theme
   
   ytmdesktop
@@ -268,10 +238,7 @@
       Restart = "always";
     };
   };
-  programs.gamemode.enable = true;
-  hardware.opentabletdriver.enable = true;
-  hardware.opentabletdriver.daemon.enable = true;
-  powerManagement.cpuFreqGovernor = "performance";
+  powerManagement.cpuFreqGovernor = "powersave";
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
   # programs.mtr.enable = true;
@@ -305,15 +272,13 @@
       meslo-lgs-nf
       noto-fonts-cjk-sans # High-quality Google/Adobe Korean font
       noto-fonts-cjk-serif
+      pkgs.nerd-fonts.jetbrains-mono
     ];
     fontconfig.defaultFonts = {
       serif = [ "Noto Serif CJK KR" "NanumMyeongjo" ];
       sansSerif = [ "Noto Sans CJK KR" "NanumGothic" ];
       monospace = [ "Noto Sans Mono CJK KR" ];
     };
-  };
-  environment.variables = {
-    DISPLAY = ":0";
   };
   fonts.fontconfig.hinting.enable = true;
   fonts.fontconfig.antialias = true;
@@ -336,9 +301,6 @@
     </fontconfig>
 '';
 
-  networking.localCommands = ''
-    ip link set wlp41s0 down
-  '';
   # Open ports in the firewall.
   # networking.firewall.allowedTCPPorts = [ ... ];
   # networking.firewall.allowedUDPPorts = [ ... ];
