@@ -157,12 +157,16 @@
     autosuggestions.enable = true;
     syntaxHighlighting.enable = true;
     shellInit = ''
-      bindkey '^[[A' history-substring-search-up
-      bindkey '^[[B' history-substring-search-down
-      bindkey '^[[OA' history-substring-search-backward
-      bindkey '^[[OB' history-substring-search-forward
     '';
-    interactiveShellInit = "source ${pkgs.zsh-history-substring-search}/share/zsh-history-substring-search/zsh-history-substring-search.zsh";
+    interactiveShellInit = "
+    source ${pkgs.zsh-history-substring-search}/share/zsh-history-substring-search/zsh-history-substring-search.zsh
+    bindkey '^[[A' history-substring-search-up
+    bindkey '^[[B' history-substring-search-down
+    bindkey '^[[OA' history-substring-search-up
+    bindkey '^[[OB' history-substring-search-down
+    bindkey '^[OA' history-substring-search-up
+    bindkey '^[OB' history-substring-search-down
+      ";
   };
   programs.niri.enable = true;
   users.users.dqb.shell = pkgs.zsh;
