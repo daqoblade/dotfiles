@@ -205,6 +205,8 @@
   git
   ripgrep
   fd
+  vscode
+  jetbrains.clion
 
   obs-studio
   qalculate-qt
