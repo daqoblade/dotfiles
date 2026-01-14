@@ -310,7 +310,7 @@
       noto-fonts-cjk-serif
       pkgs.nerd-fonts.jetbrains-mono
       cascadia-code
-      fire-code
+      fira-code
     ];
     fontconfig.defaultFonts = {
       serif = [ "Noto Serif CJK KR" "NanumMyeongjo" ];
