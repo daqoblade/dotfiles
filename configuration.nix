@@ -187,7 +187,11 @@
   };
 
   # Allow unfree packages
-  nixpkgs.config.allowUnfree = true;
+  nixpkgs.config = {
+    allowUnfree = true;
+    cudaCapabilities = ["8.6"];
+    cudaForwardCompat = false;
+  };
   programs.steam = {
     enable = true;
     remotePlay.openFirewall = true;
@@ -318,6 +322,7 @@
       monospace = [ "Noto Sans Mono CJK KR" ];
     };
   };
+  fonts.fontconfig.enable = true;
   fonts.fontconfig.hinting.enable = true;
   fonts.fontconfig.antialias = true;
   fonts.fontconfig.localConf = ''
