@@ -25,6 +25,9 @@
     enable32Bit = true;
   };
 
+  services.xserver.enable = true;
+  services.xserver.videoDrivers = [ "nvidia" ];
+
   hardware.nvidia = {
     modesetting.enable = true;
     powerManagement.enable = false;
@@ -40,6 +43,11 @@
       intelBusId = "PCI:0:2:0";
       nvidiaBusId = "PCI:1:0:0";
     };
+  };
+
+  services.ollama = {
+    enable = true;
+    acceleration = "cuda";
   };
 
   hardware.usb-modeswitch.enable = true;
@@ -75,8 +83,6 @@
 
   # Enable the X11 windowing system.
   # You can disable this if you're only using the Wayland session.
-  services.xserver.enable = true;
-  services.xserver.videoDrivers = [ "nvidia" ];
 
   # Enable the KDE Plasma Desktop Environment.
   services.displayManager.sddm.enable = true;
@@ -174,6 +180,10 @@
   programs.firefox = {
     enable = true;
     package = pkgs.firefox-bin;
+  };
+  programs.direnv = {
+    enable = true;
+    nix-direnv.enable = true;
   };
 
   # Allow unfree packages
@@ -299,6 +309,8 @@
       noto-fonts-cjk-sans # High-quality Google/Adobe Korean font
       noto-fonts-cjk-serif
       pkgs.nerd-fonts.jetbrains-mono
+      cascadia-code
+      fire-code
     ];
     fontconfig.defaultFonts = {
       serif = [ "Noto Serif CJK KR" "NanumMyeongjo" ];
