@@ -10,13 +10,15 @@
       ./hardware-configuration.nix
     ];
 
+
+
   # Bootloader.
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
   boot.blacklistedKernelModules = [ "option" "usbserial" "rtw89_8852cu" "rtw_8852cu"];
 
   # Use latest kernel.
-  boot.kernelPackages = pkgs.linuxPackages_latest;
+  boot.kernelPackages = pkgs.linuxPackages;
 
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
 
@@ -32,7 +34,7 @@
     modesetting.enable = true;
     powerManagement.enable = false;
     powerManagement.finegrained = false;
-    open = false;
+    open = true;
     nvidiaSettings = true;
     package = config.boot.kernelPackages.nvidiaPackages.stable;
     prime = {
@@ -43,11 +45,6 @@
       intelBusId = "PCI:0:2:0";
       nvidiaBusId = "PCI:1:0:0";
     };
-  };
-
-  services.ollama = {
-    enable = true;
-    acceleration = "cuda";
   };
 
   hardware.usb-modeswitch.enable = true;
@@ -93,9 +90,9 @@
   # Configure keymap in X11
   services.xserver = {
     xkb = {
-      layout = "us,kr";
+      layout = "us";
       variant = "";
-      options = "caps:escape,korean:ralt_hangul,korean:rctrl_hanja";
+      options = "caps:escape";
     };
   };
   services = {
@@ -106,6 +103,11 @@
         accelSpeed = "0.0";
       };
     };
+  };
+  xdg.portal = {
+    enable = true;
+    extraPortals = [ pkgs.xdg-desktop-portal-gtk ];
+    config.common.default = "*";
   };
 
   # Enable CUPS to print documents.
@@ -131,6 +133,8 @@
       "bluetooth.autoswitch-to-headset-profile" = false;
     };
   };
+hardware.bluetooth.enable = true;
+hardware.bluetooth.powerOnBoot = true;
 
   # Enable touchpad support (enabled default in most desktopManager).
   # services.xserver.libinput.enable = true;
@@ -204,10 +208,10 @@
 
   # List packages installed in system profile. To search, run:
   # $ nix search wget
-  environment.variables = {
-    XCURSOR_THEME = "Rin";
-    XCURSOR_SIZE = "24";
-  };
+#  environment.variables = {
+#    XCURSOR_THEME = "Rin";
+#    XCURSOR_SIZE = "24";
+#  };
   environment.systemPackages = with pkgs; [
   vim-full
   neovim
@@ -215,6 +219,12 @@
   vesktop
   helix
   usb-modeswitch
+
+  uv
+  
+  nautilus
+
+  google-chrome
   
   emacs
   git
@@ -222,6 +232,9 @@
   fd
   vscode
   jetbrains.clion
+  jetbrains.idea
+
+  isabelle
 
   obs-studio
   qalculate-qt
@@ -249,7 +262,43 @@
   wl-clipboard
   mako
   usbutils
+  
+  jdk25_headless
   ];
+programs.nix-ld.libraries = with pkgs; [
+  stdenv.cc.cc
+  zlib
+  fuse3
+  icu
+  nss
+  openssl
+  curl
+  expat
+  
+  # Graphics and Fonts (The big ones for PyQt)
+  libGL
+  libxkbcommon
+  freetype
+  fontconfig
+  glib
+  dbus
+  
+  # X11/Wayland support
+  xorg.libX11
+  xorg.libXcursor
+  xorg.libXcomposite
+  xorg.libXdamage
+  xorg.libXext
+  xorg.libXfixes
+  xorg.libXi
+  xorg.libXrender
+  xorg.libXtst
+  xorg.libxcb
+  wayland
+];
+xdg.mime.defaultApplications = {
+  "inode/directory" = "org.gnome.Nautilus.desktop";
+};
   systemd.user.services.disable-middle-click-paste = {
     description = "Disable middle-click paste by clearing primary selection";
     wantedBy = [ "graphical-session.target" ];
@@ -294,16 +343,18 @@
   console.useXkbConfig = true;
   i18n.inputMethod = {
     enable = true;
-    type = "fcitx5";
-    fcitx5.addons = with pkgs; [
-      fcitx5-hangul
-      fcitx5-gtk
-    ];
+    type = "ibus";
+    ibus.engines = with pkgs.ibus-engines; [ hangul ];
   };
 
   environment.sessionVariables = {
     MOZ_ENABLE_WAYLAND = "1"; 
   };
+environment.variables = {
+  GTK_IM_MODULE = "ibus";
+  QT_IM_MODULE = "ibus";
+  XMODIFIERS = "@im=ibus";
+};
   
   fonts = {
     packages = with pkgs; [
